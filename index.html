@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Damache · Senior Product Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #161616;
+      --border:   #242424;
+      --muted:    #555;
+      --subtle:   #888;
+      --body:     #c8c8c8;
+      --heading:  #f0f0f0;
+      --accent:   #d4f270;   /* muted lime — one deliberate pop */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(14,14,14,0.55);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(14,14,14,0.72);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .nav-logo-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--heading);
+      letter-spacing: -0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--subtle);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--heading); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      padding: 140px 0 80px;
+      overflow: hidden;
+    }
+
+    /* animated gradient background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 15% 60%, rgba(212,242,112,0.18) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 85% 20%, rgba(100,180,255,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse 50% 40% at 65% 85%, rgba(180,100,255,0.10) 0%, transparent 50%);
+      animation: gradientDrift 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes gradientDrift {
+      0%   { opacity: 0.8; transform: scale(1) translate(0, 0); }
+      50%  { opacity: 1;   transform: scale(1.04) translate(-2%, 1%); }
+      100% { opacity: 0.9; transform: scale(0.97) translate(2%, -1%); }
+    }
+
+    .hero .container { position: relative; z-index: 1; }
+
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .hero-photo {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #111;
+      flex-shrink: 0;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.14),
+        0 0 0 4px rgba(255,255,255,0.04),
+        0 16px 48px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(1);
+    }
+
+    .hero-content { }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+    .hero h1 {
+      font-size: clamp(30px, 4.5vw, 48px);
+      font-weight: 600;
+      color: var(--heading);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease forwards 0.3s;
+    }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--subtle);
+      max-width: 420px;
+      line-height: 1.55;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease forwards 0.4s;
+    }
+    .hero-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease forwards 0.5s;
+    }
+
+    @media (max-width: 640px) {
+      .hero-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .hero-photo {
+        width: 120px;
+        height: 120px;
+      }
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0e0e0e;
+    }
+    .btn-primary:hover { background: #c8e85e; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--body);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
+      color: var(--heading);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    /* ── Impact numbers ── */
+    .impact {
+      padding: 48px 0 80px;
+      border-top: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+    }
+    .metric {
+      background: rgba(22,22,22,0.6);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      padding: 36px 32px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: background 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .metric::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .metric:hover {
+      background: rgba(30,30,30,0.7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .metric.visible {
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .metric-value {
+      font-size: clamp(32px, 5vw, 44px);
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .metric-value span {
+      color: var(--accent);
+    }
+    .metric-label {
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.4;
+    }
+
+    /* ── Projects ── */
+    .projects {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 40px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+    }
+    .project-card {
+      background: rgba(22,22,22,0.6);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      padding: 32px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: background 0.25s, box-shadow 0.25s;
+      opacity: 0;
+      transform: translateY(8px);
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .project-card.visible {
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .project-card:hover {
+      background: rgba(30,30,30,0.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .project-card:hover .project-arrow { transform: translate(3px, -3px); }
+    .project-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .project-thumbnail {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .project-thumbnail-placeholder {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .project-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--heading);
+      letter-spacing: -0.01em;
+    }
+    .project-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-desc {
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.5;
+    }
+    .project-arrow {
+      font-size: 16px;
+      color: var(--subtle);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    /* ── About strip ── */
+    .about {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .about-photo {
+      width: 100%;
+    }
+    .about-photo img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .about-text h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--heading);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .about-text p {
+      font-size: 15px;
+      color: var(--subtle);
+      line-height: 1.65;
+      margin-bottom: 12px;
+    }
+    .about-text p:last-of-type { margin-bottom: 28px; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+    }
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-name {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--subtle);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--heading); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-photo, .hero-eyebrow, .hero h1, .hero-sub, .hero-links,
+      .metric, .project-card { animation: none; opacity: 1; transform: none; }
+      .hero::before { animation: none; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .metrics-grid, .projects-grid { grid-template-columns: 1fr; }
+      .about { grid-template-columns: 1fr; }
+      .about-photo { aspect-ratio: 3/2; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">
+        <svg class="nav-logo-mark" width="32" height="32" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M422.018 255.432C422.018 280.026 411.956 302.384 395.747 318.594C379.537 334.803 357.179 344.865 332.585 344.865H328.673L225.266 166H332.585C382.332 166 422.018 206.245 422.018 255.432Z" fill="white"/>
+          <path d="M296.812 345.424H90L193.406 166L205.144 186.122L296.812 345.424Z" fill="white"/>
+        </svg>
+        <span class="nav-logo-name">Alex Damache</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="mailto:alexdamache1@gmail.com">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-layout">
+        <div class="hero-photo">
+          <img src="alex-photo.jpg" alt="Alex Damache" />
+        </div>
+        <div class="hero-content">
+          <p class="hero-eyebrow">Senior Product Designer · Copenhagen</p>
+          <h1>I design product experiences that make complex things feel simple.</h1>
+          <p class="hero-sub">7 years at EcoTree. I start with the problem, not the pixels.</p>
+          <div class="hero-links">
+            <a href="#work" class="btn btn-primary">View work</a>
+            <a href="mailto:alexdamache1@gmail.com" class="btn btn-ghost">Get in touch</a>
+            <a href="https://www.linkedin.com/in/alexdamache" target="_blank" class="btn btn-ghost">LinkedIn ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact numbers -->
+  <section class="impact">
+    <div class="container">
+      <p class="section-label">Impact</p>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value"><span>50%</span>+</div>
+          <div class="metric-label">of new customers use guest checkout — adopted within 2 months of launch</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>5</span>/5</div>
+          <div class="metric-label">design quality rating in post-launch survey across EcoTree product</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">~<span>0</span></div>
+          <div class="metric-label">certificate support tickets after account redesign — previously a frequent complaint</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>#1</span></div>
+          <div class="metric-label">most visited page redesigned — account section used by tens of thousands of customers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="projects" id="work">
+    <div class="container">
+      <p class="section-label">Selected work</p>
+      <div class="projects-grid">
+
+        <a href="guest-checkout.html" class="project-card">
+          <div class="project-tags">
+            <span class="tag">UX · Ecommerce</span>
+            <span class="tag">EcoTree</span>
+          </div>
+          <div class="project-thumbnail">
+            <span class="project-thumbnail-placeholder">Coming soon</span>
+          </div>
+          <div class="project-meta">
+            <span class="project-title">Guest Checkout</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <p class="project-desc">Removed account creation from the purchase flow. Adopted by 50%+ of new customers.</p>
+        </a>
+
+        <a href="account-redesign.html" class="project-card">
+          <div class="project-tags">
+            <span class="tag">UX · Product</span>
+            <span class="tag">EcoTree</span>
+          </div>
+          <div class="project-thumbnail">
+            <span class="project-thumbnail-placeholder">Coming soon</span>
+          </div>
+          <div class="project-meta">
+            <span class="project-title">Account Redesign</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <p class="project-desc">Rebuilt the most visited page in the product. Support tickets for certificates dropped to near zero.</p>
+        </a>
+
+        <a href="gift-process.html" class="project-card">
+          <div class="project-tags">
+            <span class="tag">UX · Ecommerce</span>
+            <span class="tag">EcoTree</span>
+          </div>
+          <div class="project-thumbnail">
+            <span class="project-thumbnail-placeholder">Coming soon</span>
+          </div>
+          <div class="project-meta">
+            <span class="project-title">Gift Flow</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <p class="project-desc">Redesigned the gifting experience end to end. Removed mandatory account creation mid-flow.</p>
+        </a>
+
+        <a href="b2b-website.html" class="project-card">
+          <div class="project-tags">
+            <span class="tag">UX · Web</span>
+            <span class="tag">EcoTree</span>
+          </div>
+          <div class="project-thumbnail">
+            <span class="project-thumbnail-placeholder">Coming soon</span>
+          </div>
+          <div class="project-meta">
+            <span class="project-title">B2B Website</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <p class="project-desc">Full website redesign. +48% leads, +55% traffic, +19% conversion in 9 months.</p>
+        </a>
+
+        <a href="design-system.html" class="project-card">
+          <div class="project-tags">
+            <span class="tag">Design Systems</span>
+            <span class="tag">EcoTree</span>
+          </div>
+          <div class="project-thumbnail">
+            <span class="project-thumbnail-placeholder">Coming soon</span>
+          </div>
+          <div class="project-meta">
+            <span class="project-title">EcoTree Design System</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <p class="project-desc">Built the component library and token system used across all EcoTree products.</p>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; max-width: 900px; margin: 0 auto; padding: 0 24px;">
+      <div class="about-photo">
+        <img src="alex-photo.jpg" alt="Alex Damache" />
+      </div>
+      <div class="about-text">
+        <h2>About me</h2>
+        <p>I'm a Senior Product Designer based in Copenhagen. Since 2019 I've been at EcoTree International, where I run design solo — UX, UI, and the design system.</p>
+        <p>I care about research. I've learned that the best interfaces come from really understanding the problem first — talking to users, digging into data, then sketching. Figma comes later.</p>
+        <p>I also use AI heavily in my workflow, both for research and for building tools that make the design process faster.</p>
+        <a href="mailto:alexdamache1@gmail.com" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <span class="footer-name">Alex Damache · Copenhagen</span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/alexdamache" target="_blank">LinkedIn</a>
+        <a href="mailto:alexdamache1@gmail.com">Email</a>
+        <a href="tel:+4552799489">+45 52 79 94 89</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav border on scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Scroll-triggered fade-up for metrics and project cards
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const siblings = [...el.parentElement.children];
+          const index = siblings.indexOf(el);
+          el.style.animationDelay = `${index * 0.08}s`;
+          el.classList.add('visible');
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.metric, .project-card').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

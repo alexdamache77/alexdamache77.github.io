@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guest Checkout – EcoTree · Alex Damache</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0e0e0e; --surface: #161616; --border: #242424;
+      --muted: #555; --subtle: #888; --body: #c8c8c8;
+      --heading: #f0f0f0; --accent: #d4f270;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--body); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 0; background: rgba(14,14,14,0.55); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 1px 0 rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06); transition: background 0.3s; }
+    nav.scrolled { background: rgba(14,14,14,0.72); }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-name { font-size: 14px; font-weight: 500; color: var(--heading); letter-spacing: -0.01em; }
+    .nav-back { font-size: 13px; color: var(--subtle); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--heading); }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    .hero { padding: 128px 0 56px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.1s; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+    .tag { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 20px; }
+    .tag-accent { color: var(--accent); background: rgba(212,242,112,0.08); border-color: rgba(212,242,112,0.15); }
+    .hero h1 { font-size: clamp(28px, 4.5vw, 48px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 20px; }
+    .hero-desc { font-size: 17px; color: var(--subtle); max-width: 580px; line-height: 1.65; }
+    .hero-image { margin: 56px 0 0; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); opacity: 0; animation: fadeUp 0.6s ease forwards 0.3s; }
+    .hero-image img { width: 100%; display: block; }
+
+    .section { padding: 72px 0; border-top: 1px solid var(--border); }
+    .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
+    .section-heading { font-size: 22px; font-weight: 600; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 20px; }
+    .section p { font-size: 15px; color: var(--subtle); line-height: 1.75; margin-bottom: 16px; max-width: 660px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+    .metric { background: rgba(22,22,22,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 32px 28px; transition: background 0.2s; opacity: 0; transform: translateY(8px); position: relative; overflow: hidden; }
+    .metric::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%); pointer-events: none; }
+    .metric:hover { background: rgba(30,30,30,0.8); }
+    .metric.visible { animation: fadeUp 0.5s ease forwards; }
+    .metric-value { font-size: clamp(24px, 3.5vw, 36px); font-weight: 600; color: var(--accent); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 10px; }
+    .metric-label { font-size: 13px; color: var(--subtle); line-height: 1.5; }
+
+    .project-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; margin-top: 32px; }
+    .info-item { background: rgba(22,22,22,0.7); backdrop-filter: blur(16px); padding: 20px 22px; }
+    .info-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .info-value { font-size: 14px; font-weight: 500; color: var(--heading); }
+
+    .image-block { margin-top: 40px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+    .image-block img { width: 100%; display: block; }
+    .image-caption { font-size: 12px; color: var(--muted); text-align: center; padding: 12px 16px; background: rgba(22,22,22,0.7); border-top: 1px solid rgba(255,255,255,0.05); }
+    .image-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 40px; }
+    .image-pair .image-block { margin-top: 0; }
+
+    /* Numbered steps */
+    .steps-list { list-style: none; display: flex; flex-direction: column; margin-top: 32px; }
+    .step-item { display: grid; grid-template-columns: 48px 1fr; gap: 24px; padding: 28px 0; border-top: 1px solid var(--border); align-items: start; }
+    .step-item:last-child { border-bottom: 1px solid var(--border); }
+    .step-num { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.06em; padding-top: 2px; font-variant-numeric: tabular-nums; }
+    .step-body h3 { font-size: 15px; font-weight: 600; color: var(--heading); letter-spacing: -0.01em; margin-bottom: 6px; }
+    .step-body p { font-size: 14px; color: var(--subtle); line-height: 1.65; margin: 0; max-width: none; }
+
+    /* Icon list */
+    .icon-list { list-style: none; display: flex; flex-direction: column; margin-top: 32px; }
+    .icon-item { display: flex; gap: 16px; padding: 22px 0; border-top: 1px solid var(--border); align-items: flex-start; }
+    .icon-item:last-child { border-bottom: 1px solid var(--border); }
+    .icon-badge { flex-shrink: 0; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .icon-badge.red { background: rgba(255,80,80,0.12); }
+    .icon-badge.green { background: rgba(212,242,112,0.1); }
+    .icon-item-body h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 4px; letter-spacing: -0.01em; }
+    .icon-item-body p { font-size: 14px; color: var(--subtle); line-height: 1.65; margin: 0; max-width: none; }
+
+    /* Insight */
+    .insight-box { margin-top: 32px; background: rgba(212,242,112,0.04); border: 1px solid rgba(212,242,112,0.15); border-radius: 12px; padding: 24px 28px; }
+    .insight-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .insight-box p { font-size: 15px; color: var(--body); line-height: 1.75; margin: 0; max-width: none; font-style: italic; }
+
+    /* Next */
+    .next-project { padding: 72px 0; border-top: 1px solid var(--border); }
+    .next-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .next-link { display: inline-flex; align-items: center; gap: 10px; font-size: clamp(18px, 3vw, 28px); font-weight: 600; color: var(--heading); text-decoration: none; letter-spacing: -0.02em; transition: color 0.2s; }
+    .next-link:hover { color: var(--accent); }
+    .next-arrow { transition: transform 0.2s; }
+    .next-link:hover .next-arrow { transform: translateX(4px); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .hero, .hero-image, .metric { animation: none; opacity: 1; transform: none; } }
+    @media (max-width: 640px) { .metrics-grid { grid-template-columns: 1fr; } .image-pair { grid-template-columns: 1fr; } .step-item { grid-template-columns: 36px 1fr; gap: 16px; } }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="container">
+    <a href="index.html" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 512 512" fill="none" aria-hidden="true">
+        <path d="M422.018 255.432C422.018 280.026 411.956 302.384 395.747 318.594C379.537 334.803 357.179 344.865 332.585 344.865H328.673L225.266 166H332.585C382.332 166 422.018 206.245 422.018 255.432Z" fill="white"/>
+        <path d="M296.812 345.424H90L193.406 166L205.144 186.122L296.812 345.424Z" fill="white"/>
+      </svg>
+      <span class="nav-logo-name">Alex Damache</span>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All projects
+    </a>
+  </div>
+</nav>
+
+<section class="container">
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="tag">UX Research</span>
+      <span class="tag">Ecommerce</span>
+      <span class="tag tag-accent">EcoTree</span>
+    </div>
+    <h1>Guest Checkout</h1>
+    <p class="hero-desc">Removed the account creation wall from EcoTree's purchase flow. More than half of new customers now use it.</p>
+  </div>
+</section>
+
+<div class="container-wide">
+  <div class="hero-image">
+    <img src="gc-desktop-choice.jpg" alt="Guest checkout — how would you like to continue?" />
+  </div>
+</div>
+
+<section class="section container">
+  <span class="eyebrow">Impact</span>
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-value">50%+</div><div class="metric-label">of new customers use guest checkout, adopted within 2 months of launch</div></div>
+    <div class="metric"><div class="metric-value">↓ Drop-off</div><div class="metric-label">Account creation step eliminated as a primary purchase blocker</div></div>
+    <div class="metric"><div class="metric-value">Guest #1</div><div class="metric-label">Guest checkout promoted to primary CTA, above login and account creation</div></div>
+    <div class="metric"><div class="metric-value">2 layouts</div><div class="metric-label">Mobile modal and desktop split-panel, both shipped to production</div></div>
+  </div>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Overview</span>
+  <div class="project-info">
+    <div class="info-item"><div class="info-label">Company</div><div class="info-value">EcoTree</div></div>
+    <div class="info-item"><div class="info-label">Year</div><div class="info-value">2023</div></div>
+    <div class="info-item"><div class="info-label">My Role</div><div class="info-value">Head of Design</div></div>
+    <div class="info-item"><div class="info-label">Type</div><div class="info-value">Ecommerce UX</div></div>
+    <div class="info-item"><div class="info-label">Outcome</div><div class="info-value">Live in production</div></div>
+  </div>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">The problem</span>
+  <h2 class="section-heading">Account creation was blocking purchases</h2>
+  <p>EcoTree's checkout required users to create an account before completing a purchase. For someone buying a tree as a gift or trying the product for the first time, this was a real friction point — and we could see it in the data.</p>
+  <ul class="icon-list">
+    <li class="icon-item">
+      <div class="icon-badge red"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v5M7 10.5v.5" stroke="#ff6060" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="icon-item-body"><h3>Forced account creation before payment</h3><p>Users had to register before they could buy, adding unnecessary steps to a transaction that should be frictionless.</p></div>
+    </li>
+    <li class="icon-item">
+      <div class="icon-badge red"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2 2 5-5" stroke="#ff6060" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-item-body"><h3>Measurable drop-off at the account screen</h3><p>Analytics showed users abandoning at the account creation step — a clear signal that the wall was costing conversions.</p></div>
+    </li>
+    <li class="icon-item">
+      <div class="icon-badge red"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#ff6060" stroke-width="1.5"/><path d="M7 5v2.5" stroke="#ff6060" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="icon-item-body"><h3>No path for first-time or one-time buyers</h3><p>Someone who just wants to buy one tree as a gift has no reason to create an account. We were making them do it anyway.</p></div>
+    </li>
+  </ul>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Process</span>
+  <h2 class="section-heading">How I approached it</h2>
+  <ul class="steps-list">
+    <li class="step-item"><span class="step-num">01</span><div class="step-body"><h3>Data review</h3><p>Pulled funnel analytics to quantify drop-off at the account creation step. Identified it as the highest-friction moment in the checkout flow before any design work started.</p></div></li>
+    <li class="step-item"><span class="step-num">02</span><div class="step-body"><h3>Competitive benchmark</h3><p>Analyzed how IKEA, Apple, LEGO, Asana and Typeform handle the account/guest decision. Mapped the patterns that work: guest as primary CTA, account creation as a clearly optional track.</p></div></li>
+    <li class="step-item"><span class="step-num">03</span><div class="step-body"><h3>Wireframes and flow mapping</h3><p>Sketched both the guest path and the redesigned account creation path together. Needed both to ship — removing the account wall without improving account creation would have shifted the problem rather than solving it.</p></div></li>
+    <li class="step-item"><span class="step-num">04</span><div class="step-body"><h3>Mobile and desktop in parallel</h3><p>Designed both layouts from the start. The mobile modal and desktop split-panel have different constraints — solving them together prevented late-stage rework.</p></div></li>
+    <li class="step-item"><span class="step-num">05</span><div class="step-body"><h3>Build and ship</h3><p>Worked directly with the development team through implementation. Reviewed across devices and edge cases before launch.</p></div></li>
+  </ul>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Research</span>
+  <h2 class="section-heading">What the best flows had in common</h2>
+  <p>The clearest pattern across IKEA, Apple and LEGO: guest checkout as the path of least resistance, with account creation as a separate, clearly optional track.</p>
+  <div class="image-block">
+    <img src="gc-benchmark.jpg" alt="Benchmark — IKEA, Apple, LEGO, Google, Asana, Typeform guest checkout flows" />
+    <div class="image-caption">Benchmark — IKEA, Apple, LEGO, Asana, Typeform and others analyzed for their auth and guest checkout patterns</div>
+  </div>
+  <div class="insight-box">
+    <div class="insight-label">Key insight</div>
+    <p>"Guest checkout should be the primary CTA — not hidden below login. Users who complete a purchase as a guest can always create an account afterwards, once they've already had a good experience."</p>
+  </div>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Solution</span>
+  <h2 class="section-heading">A clear choice, guest first</h2>
+  <p>The new flow presents a clear choice upfront: continue as a guest, or log in / create an account. Guest checkout is the primary option. The design works across both mobile and desktop, adapting the layout without changing the logic.</p>
+  <div class="image-pair">
+    <div class="image-block"><img src="gc-mobile-choice.jpg" alt="Mobile — guest as primary CTA" /><div class="image-caption">Mobile — guest as primary CTA, member options secondary</div></div>
+    <div class="image-block"><img src="gc-desktop-choice.jpg" alt="Desktop — split layout with order summary" /><div class="image-caption">Desktop — split layout with persistent order summary</div></div>
+  </div>
+  <div class="image-pair" style="margin-top: 12px;">
+    <div class="image-block"><img src="gc-mobile-email.jpg" alt="Mobile — email step" /><div class="image-caption">Mobile — email step, minimal friction</div></div>
+    <div class="image-block"><img src="gc-desktop-email.jpg" alt="Desktop — email + order summary" /><div class="image-caption">Desktop — email + order summary + accepted payment methods</div></div>
+  </div>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Account creation</span>
+  <h2 class="section-heading">Passwordless by default</h2>
+  <p>For users who do want an account, we also redesigned that path. Passwordless sign-in via magic link is the default — it removes the friction of choosing and remembering a password, and it works better on mobile.</p>
+  <div class="image-pair">
+    <div class="image-block"><img src="gc-create-desktop.jpg" alt="Desktop — passwordless as default" /><div class="image-caption">Desktop — passwordless as default, Google SSO as alternative</div></div>
+    <div class="image-block"><img src="gc-create-mobile.jpg" alt="Mobile — create account" /><div class="image-caption">Mobile — same hierarchy, adapted layout</div></div>
+  </div>
+</section>
+
+<section class="section container">
+  <span class="eyebrow">Learnings</span>
+  <h2 class="section-heading">What I took from this</h2>
+  <ul class="icon-list">
+    <li class="icon-item">
+      <div class="icon-badge green"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5l3 3 6-6" stroke="#d4f270" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-item-body"><h3>Hierarchy is the design</h3><p>The decision of what gets the primary CTA is more impactful than any visual detail. Getting that hierarchy right drove the 50%+ adoption number.</p></div>
+    </li>
+    <li class="icon-item">
+      <div class="icon-badge green"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5l3 3 6-6" stroke="#d4f270" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-item-body"><h3>Benchmark before wireframing</h3><p>Seeing how IKEA, Apple and LEGO handle this gave the team shared vocabulary and made it easier to justify decisions internally.</p></div>
+    </li>
+    <li class="icon-item">
+      <div class="icon-badge green"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5l3 3 6-6" stroke="#d4f270" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-item-body"><h3>Mobile and desktop aren't the same problem</h3><p>The modal and split-panel serve the same logic, but the layout constraints are completely different. Designing both from the start avoided late-stage adaptations.</p></div>
+    </li>
+    <li class="icon-item">
+      <div class="icon-badge green"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5l3 3 6-6" stroke="#d4f270" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-item-body"><h3>Passwordless lowers the account creation bar</h3><p>Offering "continue without a password" as the default reduced the perceived effort of signing up for users who want the account benefits without the overhead.</p></div>
+    </li>
+  </ul>
+</section>
+
+<section class="next-project container">
+  <p class="next-label">Next project</p>
+  <a href="account-redesign.html" class="next-link">
+    Account Redesign
+    <svg class="next-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</section>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => { if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.metric').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

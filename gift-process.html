@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gift Process – EcoTree · Alex Damache</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0e0e0e;
+      --surface: #161616;
+      --border:  #242424;
+      --muted:   #555;
+      --subtle:  #888;
+      --body:    #c8c8c8;
+      --heading: #f0f0f0;
+      --accent:  #d4f270;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(14,14,14,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { font-size: 14px; font-weight: 500; color: var(--heading); text-decoration: none; }
+    .nav-back { font-size: 13px; color: var(--subtle); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--heading); }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    .hero {
+      padding: 120px 0 56px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+    .hero-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tag { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--border); padding: 3px 8px; border-radius: 3px; }
+    .tag-accent { color: var(--accent); background: rgba(212,242,112,0.08); }
+    .hero h1 { font-size: clamp(26px, 4.5vw, 42px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+    .hero-desc { font-size: 17px; color: var(--subtle); max-width: 580px; line-height: 1.6; }
+
+    .hero-image { margin: 48px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease forwards 0.3s; }
+    .hero-image img { width: 100%; display: block; }
+
+    .impact { padding: 72px 0; border-top: 1px solid var(--border); }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .metric { background: var(--surface); padding: 32px 28px; transition: background 0.2s; opacity: 0; transform: translateY(8px); }
+    .metric:hover { background: #1c1c1c; }
+    .metric.visible { animation: fadeUp 0.5s ease forwards; }
+    .metric-value { font-size: clamp(28px, 4vw, 40px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; }
+    .metric-value span { color: var(--accent); }
+    .metric-label { font-size: 13px; color: var(--subtle); line-height: 1.45; }
+
+    .section { padding: 64px 0; border-top: 1px solid var(--border); }
+    .section h2 { font-size: 21px; font-weight: 600; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 18px; }
+    .section p { font-size: 15px; color: var(--subtle); line-height: 1.7; margin-bottom: 14px; max-width: 660px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .project-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 48px; }
+    .info-item { background: var(--surface); padding: 20px 24px; }
+    .info-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .info-value { font-size: 14px; color: var(--body); }
+
+    .problem-list { list-style: none; margin-top: 16px; }
+    .problem-list li { font-size: 15px; color: var(--subtle); line-height: 1.6; padding: 14px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; max-width: 660px; }
+    .problem-list li:last-child { border-bottom: none; }
+    .problem-list li::before { content: '—'; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+    .process-steps { margin-top: 24px; display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .process-step { background: var(--surface); padding: 22px 28px; display: flex; gap: 20px; align-items: flex-start; }
+    .step-num { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.05em; flex-shrink: 0; margin-top: 3px; width: 20px; }
+    .step-content h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 5px; }
+    .step-content p { font-size: 13px; color: var(--subtle); line-height: 1.55; margin: 0; max-width: none; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 24px; }
+    .feature-item { background: var(--surface); padding: 28px; transition: background 0.2s; }
+    .feature-item:hover { background: #1c1c1c; }
+    .feature-item h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 8px; }
+    .feature-item p { font-size: 13px; color: var(--subtle); line-height: 1.55; margin: 0; max-width: none; }
+
+    .project-image { margin: 28px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); opacity: 0; transform: translateY(8px); }
+    .project-image.visible { animation: fadeUp 0.6s ease forwards; }
+    .project-image img { width: 100%; display: block; }
+    .image-caption { font-size: 12px; color: var(--muted); margin-top: 10px; letter-spacing: 0.02em; }
+
+    .image-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 28px 0; }
+    .image-pair .project-image { margin: 0; }
+
+    .learnings-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .learnings-list li { background: var(--surface); padding: 20px 24px; font-size: 14px; color: var(--subtle); line-height: 1.6; display: flex; gap: 12px; }
+    .learnings-list li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+    .next-project { padding: 64px 0; border-top: 1px solid var(--border); }
+    .next-project a { display: flex; justify-content: space-between; align-items: center; text-decoration: none; padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: background 0.2s, border-color 0.2s; }
+    .next-project a:hover { background: #1c1c1c; border-color: var(--subtle); }
+    .next-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .next-title { font-size: 18px; font-weight: 600; color: var(--heading); letter-spacing: -0.01em; }
+    .next-arrow { font-size: 24px; color: var(--subtle); transition: transform 0.2s; }
+    .next-project a:hover .next-arrow { transform: translate(4px, -4px); }
+
+    footer { padding: 48px 0; border-top: 1px solid var(--border); }
+    footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-name { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--subtle); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--heading); }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      .metrics-grid, .project-info, .image-pair, .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <div class="container">
+      <a href="index.html" class="nav-logo">Alex Damache</a>
+      <a href="index.html#work" class="nav-back">← All projects</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-meta">
+        <span class="tag tag-accent">EcoTree</span>
+        <span class="tag">UX Research</span>
+        <span class="tag">Product redesign</span>
+        <span class="tag">Team management</span>
+      </div>
+      <h1>Gift process – EcoTree</h1>
+      <p class="hero-desc">A full redesign of the B2B gifting flow — the tool companies use to send trees as gifts to employees and clients. The old version was so confusing that customer service had to walk people through it. The new one doesn't need explaining.</p>
+    </div>
+  </section>
+
+  <div class="container-wide">
+    <div class="hero-image">
+      <img src="gift-mockup.jpg" alt="EcoTree gift dashboard on laptop" />
+    </div>
+  </div>
+
+  <!-- Impact -->
+  <section class="impact">
+    <div class="container">
+      <p class="section-label">Impact</p>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value">↓ <span>sig.</span></div>
+          <div class="metric-label">drop in customer support tickets for gift-related questions — users now complete the flow independently</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>2</span></div>
+          <div class="metric-label">major new features shipped: draft mode and a real-time gift status dashboard</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>1</span></div>
+          <div class="metric-label">decision per screen — down from 4–6 options crammed onto a single step</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>3</span></div>
+          <div class="metric-label">person team across 2 cities — remote collaboration with Paris, coordinated from Copenhagen</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Project info + problem -->
+  <section class="section">
+    <div class="container">
+      <div class="project-info">
+        <div class="info-item">
+          <p class="info-label">Company</p>
+          <p class="info-value">EcoTree International</p>
+        </div>
+        <div class="info-item">
+          <p class="info-label">My role</p>
+          <p class="info-value">Head of Design — led direction, remote from Copenhagen</p>
+        </div>
+        <div class="info-item">
+          <p class="info-label">Team</p>
+          <p class="info-value">+ 1 Senior Designer (Paris), 1 UX Intern</p>
+        </div>
+      </div>
+
+      <h2>The problem</h2>
+      <p>EcoTree's gift flow lets companies send trees as gifts — a real product, used by real B2B clients. But the old version was a mess. Customer service was constantly fielding questions from people who couldn't figure it out on their own.</p>
+      <ul class="problem-list">
+        <li>Too many options on a single screen — users had to make 4-6 decisions at once with no clear priority</li>
+        <li>Unrelated actions grouped together, breaking basic design principles and causing confusion about what to do next</li>
+        <li>The UI was completely out of sync with the design system — inconsistent, dated, and low quality</li>
+        <li>Customer service quote: "clients always ask for help because the process is too confusing"</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="project-image">
+      <img src="gift-old.jpg" alt="Old gift process with UX audit annotations" />
+      <p class="image-caption">The old flow — multiple unrelated decisions on one screen, outdated UI, no design system alignment.</p>
+    </div>
+  </div>
+
+  <!-- Research -->
+  <section class="section">
+    <div class="container">
+      <h2>Research</h2>
+      <p>We ran a full UX audit of the existing flow and benchmarked it against other gifting and e-commerce products. Duolingo was an interesting reference — not for the content, but for how well it breaks complex flows into one decision at a time.</p>
+      <p>Three things came out of the benchmark that shaped the redesign: single-choice steps, clear feedback on what the user had already selected, and the ability to save progress and come back later.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="image-pair">
+      <div class="project-image">
+        <img src="gift-research.jpg" alt="UX audit and research in Figma" />
+        <p class="image-caption">UX audit — documented every problem in the old flow before touching any new designs.</p>
+      </div>
+      <div class="project-image">
+        <img src="gift-benchmark.jpg" alt="Benchmark analysis" />
+        <p class="image-caption">Benchmark — analyzed gifting and e-commerce flows for patterns that actually work.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process -->
+  <section class="section">
+    <div class="container">
+      <h2>Process</h2>
+      <p>The user flow came before the wireframes. We mapped out every decision point and reorganised them into a linear sequence — one choice per screen, in a logical order. That alone eliminated most of the confusion from the old version.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="project-image">
+      <img src="gift-flow.jpg" alt="User flow diagram" />
+      <p class="image-caption">The new user flow — every decision mapped out before we built anything.</p>
+    </div>
+    <div class="project-image">
+      <img src="gift-wireframes.jpg" alt="Wireframes" />
+      <p class="image-caption">Wireframes — one task per screen, clear progress indicators, no dead ends.</p>
+    </div>
+  </div>
+
+  <!-- Design -->
+  <section class="section">
+    <div class="container">
+      <h2>The design</h2>
+      <p>The visual design followed the EcoTree design system throughout. Clean layouts, one clear action per step, nature-themed visuals that connect with the idea of gifting a tree. We also built in a gift preview so users could see the final card before sending — which removed a lot of the anxiety around "did I do this right?"</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="project-image">
+      <img src="gift-design.jpg" alt="Full gift flow screens" />
+      <p class="image-caption">The full redesigned flow — each step clean, focused, and connected to the design system.</p>
+    </div>
+    <div class="project-image">
+      <img src="gift-desktop.jpg" alt="Gift process desktop detail" />
+      <p class="image-caption">Desktop — theme selection step. One decision, four options, nothing else on screen.</p>
+    </div>
+    <div class="project-image">
+      <img src="gift-mobile.jpg" alt="Gift process mobile views" />
+      <p class="image-caption">Mobile — the flow works across every screen size without compromise.</p>
+    </div>
+  </div>
+
+  <!-- Key features -->
+  <section class="section">
+    <div class="container">
+      <h2>Key features</h2>
+      <p>Two new features came directly from the research — both addressing real pain points we saw in the old flow.</p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <h3>Draft mode</h3>
+          <p>Users can save their progress and come back later. Previously, leaving mid-flow meant starting over. Now it sits in the dashboard as a draft until they're ready.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Gift status dashboard</h3>
+          <p>Companies can see exactly where each gift is: draft, activated, email sent, email scheduled. No more contacting support to find out if a gift arrived.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="project-image">
+      <img src="gift-features.jpg" alt="Streamlined gift process summary" />
+      <p class="image-caption">Single-choice steps, clear gift status, draft mode — the three things that changed the experience.</p>
+    </div>
+    <div class="project-image">
+      <img src="gift-end.jpg" alt="Final gift process result" />
+      <p class="image-caption">The final live product — built, shipped, and used by real companies.</p>
+    </div>
+  </div>
+
+  <!-- Learnings -->
+  <section class="section">
+    <div class="container">
+      <h2>What I learned</h2>
+      <ul class="learnings-list">
+        <li>The user flow is the design. We spent more time on the flow diagram than on the UI, and that's where the real improvement came from. Good visuals on a bad flow doesn't fix anything.</li>
+        <li>Customer service is a research source. The quote "clients always ask for help" is a UX problem, not a user problem. That framing made prioritisation much clearer.</li>
+        <li>Remote collaboration works when the process is tight. Paris and Copenhagen, mostly async through Figma. The 2 weeks in person helped, but the documentation discipline is what kept it from falling apart between those trips.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Next project -->
+  <section class="next-project">
+    <div class="container">
+      <a href="#">
+        <div>
+          <p class="next-label">Next project</p>
+          <p class="next-title">EcoTree Design System</p>
+        </div>
+        <span class="next-arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <span class="footer-name">Alex Damache · Copenhagen</span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/alexdamache" target="_blank">LinkedIn</a>
+        <a href="mailto:alexdamache1@gmail.com">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const siblings = [...el.parentElement.children];
+          const index = siblings.indexOf(el);
+          el.style.animationDelay = `${index * 0.08}s`;
+          el.classList.add('visible');
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.metric, .project-image').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

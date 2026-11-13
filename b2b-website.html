@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2B Website – EcoTree · Alex Damache</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0e0e0e;
+      --surface: #161616;
+      --border:  #242424;
+      --muted:   #555;
+      --subtle:  #888;
+      --body:    #c8c8c8;
+      --heading: #f0f0f0;
+      --accent:  #d4f270;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(14,14,14,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { font-size: 14px; font-weight: 500; color: var(--heading); text-decoration: none; }
+    .nav-back { font-size: 13px; color: var(--subtle); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--heading); }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    .hero {
+      padding: 120px 0 56px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+    .hero-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tag { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--border); padding: 3px 8px; border-radius: 3px; }
+    .tag-accent { color: var(--accent); background: rgba(212,242,112,0.08); }
+    .hero h1 { font-size: clamp(26px, 4.5vw, 42px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+    .hero-desc { font-size: 17px; color: var(--subtle); max-width: 580px; line-height: 1.6; }
+
+    .hero-image { margin: 48px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease forwards 0.3s; }
+    .hero-image img { width: 100%; display: block; }
+
+    .impact { padding: 72px 0; border-top: 1px solid var(--border); }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .metric { background: var(--surface); padding: 32px 28px; transition: background 0.2s; opacity: 0; transform: translateY(8px); }
+    .metric:hover { background: #1c1c1c; }
+    .metric.visible { animation: fadeUp 0.5s ease forwards; }
+    .metric-value { font-size: clamp(28px, 4vw, 40px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; }
+    .metric-value span { color: var(--accent); }
+    .metric-label { font-size: 13px; color: var(--subtle); line-height: 1.45; }
+
+    .section { padding: 64px 0; border-top: 1px solid var(--border); }
+    .section h2 { font-size: 21px; font-weight: 600; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 18px; }
+    .section p { font-size: 15px; color: var(--subtle); line-height: 1.7; margin-bottom: 14px; max-width: 660px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .project-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 48px; }
+    .info-item { background: var(--surface); padding: 20px 24px; }
+    .info-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .info-value { font-size: 14px; color: var(--body); }
+
+    .process-steps { margin-top: 24px; display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .process-step { background: var(--surface); padding: 22px 28px; display: flex; gap: 20px; align-items: flex-start; }
+    .step-num { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.05em; flex-shrink: 0; margin-top: 3px; width: 20px; }
+    .step-content h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 5px; }
+    .step-content p { font-size: 13px; color: var(--subtle); line-height: 1.55; margin: 0; max-width: none; }
+
+    .project-image { margin: 28px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); opacity: 0; transform: translateY(8px); }
+    .project-image.visible { animation: fadeUp 0.6s ease forwards; }
+    .project-image img { width: 100%; display: block; }
+    .image-caption { font-size: 12px; color: var(--muted); margin-top: 10px; letter-spacing: 0.02em; }
+
+    .image-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 28px 0; }
+    .image-pair .project-image { margin: 0; }
+
+    .learnings-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .learnings-list li { background: var(--surface); padding: 20px 24px; font-size: 14px; color: var(--subtle); line-height: 1.6; display: flex; gap: 12px; }
+    .learnings-list li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+    .next-project { padding: 64px 0; border-top: 1px solid var(--border); }
+    .next-project a { display: flex; justify-content: space-between; align-items: center; text-decoration: none; padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: background 0.2s, border-color 0.2s; }
+    .next-project a:hover { background: #1c1c1c; border-color: var(--subtle); }
+    .next-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .next-title { font-size: 18px; font-weight: 600; color: var(--heading); letter-spacing: -0.01em; }
+    .next-arrow { font-size: 24px; color: var(--subtle); transition: transform 0.2s; }
+    .next-project a:hover .next-arrow { transform: translate(4px, -4px); }
+
+    footer { padding: 48px 0; border-top: 1px solid var(--border); }
+    footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-name { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--subtle); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--heading); }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      .metrics-grid, .project-info, .image-pair { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <div class="container">
+      <a href="index.html" class="nav-logo">Alex Damache</a>
+      <a href="index.html#work" class="nav-back">← All projects</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-meta">
+        <span class="tag tag-accent">EcoTree</span>
+        <span class="tag">UX Research</span>
+        <span class="tag">UI/UX</span>
+        <span class="tag">Team management</span>
+      </div>
+      <h1>B2B website – EcoTree</h1>
+      <p class="hero-desc">EcoTree expanded into carbon credits and biodiversity solutions for companies. They needed a site that could explain complex environmental products clearly — to audiences who had never bought a tree before.</p>
+    </div>
+  </section>
+
+  <div class="container-wide">
+    <div class="hero-image">
+      <img src="b2b-hero.jpg" alt="EcoTree B2B website on laptop" />
+    </div>
+  </div>
+
+  <!-- Impact -->
+  <section class="impact">
+    <div class="container">
+      <p class="section-label">Impact</p>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value"><span>+48%</span></div>
+          <div class="metric-label">increase in incoming leads after launch</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>+55%</span></div>
+          <div class="metric-label">increase in traffic over 9 months</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>+19%</span></div>
+          <div class="metric-label">increase in conversion rate</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value"><span>10+</span></div>
+          <div class="metric-label">pages designed across 3 solution areas: forests, carbon, and biodiversity</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Context -->
+  <section class="section">
+    <div class="container">
+      <div class="project-info">
+        <div class="info-item">
+          <p class="info-label">Company</p>
+          <p class="info-value">EcoTree International</p>
+        </div>
+        <div class="info-item">
+          <p class="info-label">My role</p>
+          <p class="info-value">Lead Designer — structure, wireframes, UI</p>
+        </div>
+        <div class="info-item">
+          <p class="info-label">Team</p>
+          <p class="info-value">+ 1 Designer (Paris), 1 Student Designer, Marketing + Copywriters</p>
+        </div>
+      </div>
+
+      <h2>The brief</h2>
+      <p>EcoTree had developed new B2B solutions — carbon credits, biodiversity projects, tree ownership for companies — but no website to present them properly. The old site was built for individual buyers. This was a different audience: sustainability managers, procurement teams, CSR leads.</p>
+      <p>The brief came down to two things. Make it easy to understand what EcoTree actually offers. And make the expertise feel credible. The keywords from the brief: expertise, corporate, nature-based solutions.</p>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section">
+    <div class="container">
+      <h2>Process</h2>
+      <p>With teams across France and Denmark, plus marketing and copywriters involved, we needed a clear process before touching any design tools. Seven stages, each with defined owners and reviewers.</p>
+      <div class="process-steps">
+        <div class="process-step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <h3>Brief</h3>
+            <p>FR and INTL teams aligned on goals, audience, and content priorities before anything else started.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <h3>Structure</h3>
+            <p>Alex, Philippine, Dan, and Clemance built the sitemap and decided which sections each page needed. Reviewed by Geraldine and Thomas.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <h3>Wireframes</h3>
+            <p>Alex and Marion translated the structure into wireframes, working in parallel with the copywriting team so content and layout evolved together.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <h3>Visual design</h3>
+            <p>Built on the EcoTree design system. Photo selection, pictograms, and custom infographics — including a diagram showing how carbon is absorbed in different ecosystems.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">05</span>
+          <div class="step-content">
+            <h3>Development and localisation</h3>
+            <p>Rawan and Vlad handled development with David, Alex, and Marion reviewing. Dan and the copywriters handled localisation across languages.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="project-image">
+      <img src="b2b-process.jpg" alt="Process overview table" />
+      <p class="image-caption">Seven stages, clear owners at each step — the only way to coordinate a project this size across two countries.</p>
+    </div>
+    <div class="project-image">
+      <img src="b2b-sitemap.jpg" alt="Site structure and sitemap" />
+      <p class="image-caption">The sitemap — home, solutions (forest, carbon, biodiversity), about us, and raise awareness sections, each with its own page hierarchy.</p>
+    </div>
+    <div class="project-image">
+      <img src="b2b-wireframes.jpg" alt="Wireframes" />
+      <p class="image-caption">Wireframes built in parallel with the copywriters — structure and storytelling developed together, not sequentially.</p>
+    </div>
+  </div>
+
+  <!-- Design -->
+  <section class="section">
+    <div class="container">
+      <h2>The design</h2>
+      <p>The visual design pulled from the EcoTree design system, which meant consistent components and faster development. The heavier lifting was in the content design: selecting and editing the right photography, creating custom carbon sequestration infographics, and making complex scientific concepts readable for a non-specialist B2B audience.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="image-pair">
+      <div class="project-image">
+        <img src="b2b-design-01.jpg" alt="Carbon page design" />
+        <p class="image-caption">Carbon credits page — complex product, clear layout, custom infographic explaining sequestration.</p>
+      </div>
+      <div class="project-image">
+        <img src="b2b-design-02.jpg" alt="Forest page design" />
+        <p class="image-caption">Forest solutions page — visual hierarchy guides the reader from hero to CTA without friction.</p>
+      </div>
+    </div>
+    <div class="project-image">
+      <img src="b2b-design-03.jpg" alt="Additional page design" />
+      <p class="image-caption">Loyalty programme page — built for partnership and co-branding use cases.</p>
+    </div>
+    <div class="project-image">
+      <img src="b2b-fullsite.jpg" alt="Full site overview" />
+      <p class="image-caption">Full site overview — home page, solutions, about us, and raise awareness sections.</p>
+    </div>
+  </div>
+
+  <!-- Learnings -->
+  <section class="section">
+    <div class="container">
+      <h2>What I learned</h2>
+      <ul class="learnings-list">
+        <li>Process documentation is design work. With this many stakeholders, the process table we built upfront saved the project from becoming a coordination nightmare. Time spent on it was time well spent.</li>
+        <li>Content and layout can't be separated. Building wireframes alongside the copywriters meant we avoided the classic problem of beautiful layouts that don't fit the actual content.</li>
+        <li>Design system pays off at scale. This site had 10+ pages. Because everything was built on components, changes could be made globally without breaking anything. It also meant development moved significantly faster.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Next project -->
+  <section class="next-project">
+    <div class="container">
+      <a href="#">
+        <div>
+          <p class="next-label">Next project</p>
+          <p class="next-title">EcoTree Design System</p>
+        </div>
+        <span class="next-arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <span class="footer-name">Alex Damache · Copenhagen</span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/alexdamache" target="_blank">LinkedIn</a>
+        <a href="mailto:alexdamache1@gmail.com">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const siblings = [...el.parentElement.children];
+          const index = siblings.indexOf(el);
+          el.style.animationDelay = `${index * 0.08}s`;
+          el.classList.add('visible');
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.metric, .project-image').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

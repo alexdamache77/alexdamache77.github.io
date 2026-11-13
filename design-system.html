@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoTree Design System · Alex Damache</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0e0e0e;
+      --surface: #161616;
+      --border:  #242424;
+      --muted:   #555;
+      --subtle:  #888;
+      --body:    #c8c8c8;
+      --heading: #f0f0f0;
+      --accent:  #d4f270;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(14,14,14,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { font-size: 14px; font-weight: 500; color: var(--heading); text-decoration: none; }
+    .nav-back { font-size: 13px; color: var(--subtle); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--heading); }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    .hero {
+      padding: 120px 0 56px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+    .hero-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tag { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--border); padding: 3px 8px; border-radius: 3px; }
+    .tag-accent { color: var(--accent); background: rgba(212,242,112,0.08); }
+    .hero h1 { font-size: clamp(26px, 4.5vw, 42px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+    .hero-desc { font-size: 17px; color: var(--subtle); max-width: 580px; line-height: 1.6; }
+
+    .hero-image { margin: 48px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease forwards 0.3s; }
+    .hero-image img { width: 100%; display: block; }
+
+    .impact { padding: 72px 0; border-top: 1px solid var(--border); }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .metric { background: var(--surface); padding: 32px 28px; transition: background 0.2s; opacity: 0; transform: translateY(8px); }
+    .metric:hover { background: #1c1c1c; }
+    .metric.visible { animation: fadeUp 0.5s ease forwards; }
+    .metric-value { font-size: clamp(28px, 4vw, 40px); font-weight: 600; color: var(--heading); letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; }
+    .metric-value span { color: var(--accent); }
+    .metric-label { font-size: 13px; color: var(--subtle); line-height: 1.45; }
+
+    .section { padding: 64px 0; border-top: 1px solid var(--border); }
+    .section h2 { font-size: 21px; font-weight: 600; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 18px; }
+    .section p { font-size: 15px; color: var(--subtle); line-height: 1.7; margin-bottom: 14px; max-width: 660px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .project-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 0; }
+    .info-item { background: var(--surface); padding: 20px 22px; }
+    .info-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .info-value { font-size: 14px; font-weight: 500; color: var(--heading); }
+
+    .image-block { margin-top: 40px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .image-block img { width: 100%; display: block; }
+    .image-caption { font-size: 12px; color: var(--muted); text-align: center; padding: 12px 16px; background: var(--surface); }
+
+    .image-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .image-pair .image-block { margin-top: 0; }
+
+    .step-list { list-style: none; counter-reset: steps; margin-top: 28px; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .step-item { counter-increment: steps; display: flex; gap: 20px; align-items: flex-start; padding: 24px 28px; background: var(--surface); border-bottom: 1px solid var(--border); transition: background 0.2s; }
+    .step-item:last-child { border-bottom: none; }
+    .step-item:hover { background: #1a1a1a; }
+    .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent); margin-top: 2px; }
+    .step-body h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 5px; }
+    .step-body p { font-size: 13px; color: var(--subtle); line-height: 1.6; margin: 0; max-width: none; }
+
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px 24px; transition: border-color 0.2s; }
+    .feature-card:hover { border-color: rgba(212,242,112,0.2); }
+    .feature-icon { font-size: 20px; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: var(--subtle); line-height: 1.6; margin: 0; max-width: none; }
+
+    .token-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 28px; }
+    .token-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+    .token-swatch { width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; }
+    .token-info h4 { font-size: 12px; font-weight: 600; color: var(--heading); margin-bottom: 2px; }
+    .token-info p { font-size: 11px; color: var(--muted); margin: 0; }
+
+    .learnings-list { list-style: none; display: flex; flex-direction: column; gap: 0; margin-top: 28px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .learning-item { display: flex; gap: 16px; padding: 20px 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .learning-item:last-child { border-bottom: none; }
+    .learning-dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 8px; }
+    .learning-item p { font-size: 14px; color: var(--body); line-height: 1.65; margin: 0; }
+
+    .next-project { padding: 72px 0; border-top: 1px solid var(--border); }
+    .next-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .next-link { display: inline-flex; align-items: center; gap: 10px; font-size: clamp(18px, 3vw, 26px); font-weight: 600; color: var(--heading); text-decoration: none; letter-spacing: -0.02em; transition: color 0.2s; }
+    .next-link:hover { color: var(--accent); }
+    .next-arrow { transition: transform 0.2s; }
+    .next-link:hover .next-arrow { transform: translateX(4px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+      .image-pair { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .project-info { grid-template-columns: 1fr 1fr; }
+      .token-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="container">
+    <a href="index.html" class="nav-logo">Alex Damache</a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All projects
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="container">
+  <div class="hero">
+    <div class="hero-meta">
+      <span class="tag">Design Systems</span>
+      <span class="tag">Component Library</span>
+      <span class="tag tag-accent">EcoTree</span>
+    </div>
+    <h1>EcoTree<br>Design System</h1>
+    <p class="hero-desc">A scalable, Atomic Design-based component library that became the shared language between design and development across EcoTree's products.</p>
+  </div>
+</section>
+
+<div class="container-wide">
+  <div class="hero-image">
+    <img src="ds-overview.jpg" alt="EcoTree Design System — full component library overview" />
+  </div>
+</div>
+
+<!-- IMPACT -->
+<section class="impact container">
+  <p class="section-label">Impact</p>
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="metric-value"><span>100</span>+</div>
+      <div class="metric-label">Responsive components covering atoms, molecules, and organisms</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value"><span>2</span></div>
+      <div class="metric-label">Major products built on top of the system (B2B site + client dashboard)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">Atomic</div>
+      <div class="metric-label">Methodology adopted — scalable architecture from tokens to full templates</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value"><span>↓</span></div>
+      <div class="metric-label">Significantly reduced design-to-dev handoff time and inconsistency</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT INFO -->
+<section class="section container">
+  <div class="project-info">
+    <div class="info-item">
+      <div class="info-label">Company</div>
+      <div class="info-value">EcoTree</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">My Role</div>
+      <div class="info-value">Head of Design</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Team</div>
+      <div class="info-value">2 designers + 1 intern</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Scope</div>
+      <div class="info-value">Tokens → Templates</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section container">
+  <h2>About the project</h2>
+  <p>EcoTree lacked a shared visual language. Designers and developers worked from inconsistent references, which led to duplicated work, mismatched UI, and slow handoffs. As the design team grew and more product surfaces emerged, the need for a proper system became critical.</p>
+  <p>I led the creation of the EcoTree Design System — a centralized library built on Atomic Design principles, covering everything from raw design tokens to full page templates. The goal was to create something developers could actually use, not just a polished Figma file that stayed disconnected from production.</p>
+
+  <div class="image-block">
+    <img src="ds-colors.jpg" alt="EcoTree color tokens — Primary, Accent, Success, Danger, Warning, Info" />
+    <div class="image-caption">Color tokens — semantic naming so the same palette works across light and dark contexts</div>
+  </div>
+</section>
+
+<!-- WHAT IT COVERS -->
+<section class="section container">
+  <h2>What the system covers</h2>
+  <p>The system was built to be complete enough that a designer joining the team could be productive from day one, and specific enough that developers didn't need to interpret intent.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <h3>Design Tokens</h3>
+      <p>Color, typography, spacing, and radius — all defined as named variables. Tokens are the foundation everything else inherits from.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">Aa</div>
+      <h3>Typography Scale</h3>
+      <p>Montserrat type scale with Display 1–5, Paragraph, Bold, Link, Small, and System styles — covering every content context in the product.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚛️</div>
+      <h3>Atomic Components</h3>
+      <p>100+ responsive components organized as atoms, molecules, and organisms — from buttons and inputs to cards, notifications, and full page layouts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">↗️</div>
+      <h3>Interaction Guidelines</h3>
+      <p>Documented hover states, click behaviors, and transitions so developers had clear specs — not just static designs — to implement from.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TYPOGRAPHY -->
+<section class="section container">
+  <h2>Typography</h2>
+  <p>Montserrat was chosen for its clarity at both large display sizes and small body text. The scale is named semantically — Display, Paragraph, System — so designers pick by role, not by arbitrary size numbers.</p>
+
+  <div class="image-block">
+    <img src="ds-typography.jpg" alt="Montserrat type scale — Display 1–5, Paragraph variants, Link, Small, System" />
+    <div class="image-caption">Montserrat type scale — 9 named styles covering every content context</div>
+  </div>
+</section>
+
+<!-- COLORS -->
+<section class="section container">
+  <h2>Color tokens</h2>
+  <p>The palette uses semantic naming so intent is always clear. Each token communicates purpose — not just a hex value.</p>
+
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="token-swatch" style="background:#3F6341;"></div>
+      <div class="token-info"><h4>Primary</h4><p>#3F6341</p></div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#DCA547;"></div>
+      <div class="token-info"><h4>Accent</h4><p>#DCA547</p></div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#19874C;"></div>
+      <div class="token-info"><h4>Success</h4><p>#19874C</p></div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#D43735;"></div>
+      <div class="token-info"><h4>Danger</h4><p>#D43735</p></div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#F79B2E;"></div>
+      <div class="token-info"><h4>Warning</h4><p>#F79B2E</p></div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#009ED0;"></div>
+      <div class="token-info"><h4>Info</h4><p>#009ED0</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTS -->
+<section class="section container">
+  <h2>Components</h2>
+  <p>The library follows Atomic Design: atoms are the smallest indivisible pieces, molecules combine them into functional units, and organisms are complete UI sections ready to be composed into pages.</p>
+  <p>Auto-layout and pixel-perfect measurements meant developers could inspect components and know exactly how they should behave — dimensions, padding, corner radii, and spacing were all explicit.</p>
+
+  <div class="image-block">
+    <img src="ds-components.jpg" alt="Component details — alerts, notification cards, and data views" />
+    <div class="image-caption">Component detail — atoms combined into functional molecules with full documentation</div>
+  </div>
+
+  <div class="image-pair" style="margin-top:16px;">
+    <div class="image-block" style="margin-top:0;">
+      <img src="ds-specs.jpg" alt="Component specs with pixel measurements — 288×384px card, 16px padding" />
+      <div class="image-caption">Pixel-perfect specs for developers</div>
+    </div>
+    <div class="image-block" style="margin-top:0;">
+      <img src="ds-interaction.jpg" alt="Interaction guidelines — hover states, click behaviors, image zoom" />
+      <div class="image-caption">Interaction guidelines for every state</div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATES -->
+<section class="section container">
+  <h2>Section templates</h2>
+  <p>The system went beyond components — it included a full library of page section templates showing how organisms combine into real product surfaces. This closed the last gap between design and implementation.</p>
+
+  <div class="image-block">
+    <img src="ds-website.jpg" alt="Website section templates in context" />
+    <div class="image-caption">Section templates — from atoms to production-ready layouts</div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section container">
+  <h2>How we built it</h2>
+  <p>This wasn't a top-down system designed in isolation. We built it while shipping real products, which meant it was tested against actual product needs from the start.</p>
+
+  <ul class="step-list">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Audit the existing UI</h3>
+        <p>Catalogued every component in use across the dashboard and website — identified duplicates, inconsistencies, and gaps that were silently slowing the team down.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Define tokens first</h3>
+        <p>Before touching a single component, we locked down the token layer — color, spacing, radius, and type. Every decision above it inherits from here.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Build atomically</h3>
+        <p>Started with atoms, assembled molecules, composed organisms. Each level was validated before the next was built — no skipping ahead.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Document for developers</h3>
+        <p>Added interaction guidelines, spacing specs, and behavior notes alongside every component. The goal was a Figma file developers could work from independently.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Ship on real products</h3>
+        <p>The system was immediately stress-tested on the B2B website redesign and the client account dashboard — two very different surfaces with different content needs.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- LEARNINGS -->
+<section class="section container">
+  <h2>Learnings</h2>
+
+  <ul class="learnings-list">
+    <li class="learning-item">
+      <div class="learning-dot"></div>
+      <p><strong style="color:var(--heading);">A design system is a product, not a deliverable.</strong> It needs maintenance, versioning, and buy-in. The biggest risk is building it once and letting it drift from the products it's meant to serve.</p>
+    </li>
+    <li class="learning-item">
+      <div class="learning-dot"></div>
+      <p><strong style="color:var(--heading);">Tokens are the hardest part to get right.</strong> Every naming decision you make at the token level ripples through the entire system. Getting semantic naming right early saved a huge amount of rework later.</p>
+    </li>
+    <li class="learning-item">
+      <div class="learning-dot"></div>
+      <p><strong style="color:var(--heading);">Developer trust is earned through specificity.</strong> A spec sheet with pixel measurements and interaction states gets adopted. A beautiful Figma file with no annotations does not.</p>
+    </li>
+    <li class="learning-item">
+      <div class="learning-dot"></div>
+      <p><strong style="color:var(--heading);">Build alongside a real product.</strong> Designing a system in isolation produces theoretical components. Building it while shipping the B2B site surfaced real-world edge cases we would have missed otherwise.</p>
+    </li>
+  </ul>
+</section>
+
+<!-- NEXT -->
+<section class="next-project container">
+  <p class="next-label">Next project</p>
+  <a href="guest-checkout.html" class="next-link">
+    Guest Checkout
+    <svg class="next-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</section>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.metric').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
